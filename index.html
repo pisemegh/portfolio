@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meghana Pise — Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          accent: {
+            50: '#eff6ff', 100: '#dbeafe', 400: '#60a5fa',
+            500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8'
+          }
+        },
+        fontFamily: { sans: ['Inter', 'sans-serif'] }
+      }
+    }
+  }
+</script>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin></script>
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  .typing-cursor {
+    display: inline-block;
+    width: 2px;
+    background: #2563eb;
+    margin-left: 2px;
+    animation: blink 0.8s step-start infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  html { scroll-behavior: smooth; }
+</style>
+</head>
+<body class="bg-white text-gray-900">
+
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+// ---------- Typing loop hook ----------
+function useTypingLoop(phrases, typeSpeed = 65, deleteSpeed = 35, pause = 1400) {
+  const [text, setText] = useState("");
+  const [phraseIdx, setPhraseIdx] = useState(0);
+  const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    const current = phrases[phraseIdx];
+    let timeout;
+
+    if (!deleting && text.length < current.length) {
+      timeout = setTimeout(() => setText(current.slice(0, text.length + 1)), typeSpeed);
+    } else if (!deleting && text.length === current.length) {
+      timeout = setTimeout(() => setDeleting(true), pause);
+    } else if (deleting && text.length > 0) {
+      timeout = setTimeout(() => setText(current.slice(0, text.length - 1)), deleteSpeed);
+    } else if (deleting && text.length === 0) {
+      setDeleting(false);
+      setPhraseIdx((phraseIdx + 1) % phrases.length);
+    }
+    return () => clearTimeout(timeout);
+  }, [text, deleting, phraseIdx]);
+
+  return text;
+}
+
+// ---------- Nav ----------
+function Navbar() {
+  const links = ["Home", "About", "Skills", "Projects", "Resume"];
+  return (
+    <nav className="sticky top-0 bg-white/90 backdrop-blur border-b border-gray-100 z-50">
+      <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+        <span className="font-bold text-lg">Meghana Pise</span>
+        <div className="hidden sm:flex gap-8">
+          {links.map(l => (
+            <a key={l} href={`#${l.toLowerCase()}`}
+               className="text-sm text-gray-600 hover:text-accent-600 transition-colors">
+              {l}
+            </a>
+          ))}
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+// ---------- Hero ----------
+function Hero() {
+  const typed = useTypingLoop([
+    "AI/ML enthusiast student",
+    "Cybersecurity student"
+  ]);
+
+  return (
+    <section id="home" className="max-w-6xl mx-auto px-6 py-24 grid md:grid-cols-2 gap-12 items-center">
+      <div className="flex justify-center md:justify-start">
+        <img src="hero-photo.jpg" alt="Meghana Pise"
+             className="w-64 h-64 rounded-full object-cover border-4 border-accent-100" />
+      </div>
+      <div>
+        <p className="text-accent-600 font-medium mb-2">
+          Hello, I'm <span className="font-semibold">{typed}</span>
+          <span className="typing-cursor h-5 align-middle"></span>
+        </p>
+        <h1 className="text-4xl sm:text-5xl font-extrabold mb-4">Meghana Pise</h1>
+        <p className="text-gray-600 leading-relaxed mb-8 max-w-md">
+          3rd-year Computer Science Engineering student (IoT & Blockchain specialization)
+          at Dayananda Sagar College of Engineering, focused on AI/ML with a growing
+          interest in cybersecurity.
+        </p>
+        <div className="flex flex-wrap gap-4 mb-6">
+          <a href="#resume" className="px-6 py-3 rounded-full bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 transition-colors">
+            Download CV
+          </a>
+          <a href="#contact" className="px-6 py-3 rounded-full border border-gray-300 text-sm font-medium hover:border-accent-500 hover:text-accent-600 transition-colors">
+            Contact Info
+          </a>
+        </div>
+        <div className="flex gap-4">
+          <a href="https://github.com/pisemegh" target="_blank" rel="noreferrer" className="text-gray-500 hover:text-gray-900">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.5 0 12.3c0 5.43 3.44 10.03 8.2 11.66.6.11.82-.27.82-.6 0-.29-.01-1.06-.02-2.08-3.34.75-4.04-1.64-4.04-1.64-.55-1.43-1.34-1.82-1.34-1.82-1.09-.77.08-.75.08-.75 1.21.09 1.84 1.27 1.84 1.27 1.07 1.87 2.81 1.33 3.5 1.02.11-.79.42-1.33.76-1.64-2.67-.31-5.47-1.37-5.47-6.1 0-1.35.47-2.45 1.24-3.31-.12-.31-.54-1.57.12-3.28 0 0 1.01-.33 3.3 1.26a11.2 11.2 0 0 1 6.01 0c2.28-1.59 3.29-1.26 3.29-1.26.66 1.71.24 2.97.12 3.28.77.86 1.24 1.96 1.24 3.31 0 4.74-2.8 5.78-5.48 6.09.43.38.81 1.13.81 2.28 0 1.65-.01 2.98-.01 3.38 0 .33.21.72.82.6C20.57 22.32 24 17.73 24 12.3 24 5.5 18.63 0 12 0Z"/></svg>
+          </a>
+          <a href="https://mail.google.com/mail/?view=cm&fs=1&to=pisemegh1@gmail.com" target="_blank" rel="noreferrer" className="text-gray-500 hover:text-gray-900">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4-8 5-8-5V6l8 5 8-5v2Z"/></svg>
+          </a>
+          <a href="https://www.linkedin.com/in/meghanapise/" target="_blank" rel="noreferrer" className="text-gray-500 hover:text-gray-900">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.03-1.85-3.03-1.85 0-2.14 1.45-2.14 2.94v5.66H9.36V9h3.41v1.56h.05c.48-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45Z"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ---------- About ----------
+function About() {
+  return (
+    <section id="about" className="max-w-6xl mx-auto px-6 py-20">
+      <p className="text-center text-sm text-gray-500 mb-1">Get to know more</p>
+      <h2 className="text-center text-3xl font-bold mb-14">About Me</h2>
+      <div className="grid md:grid-cols-2 gap-12 items-start">
+        <div className="flex justify-center">
+          <img src="about-photo.jpg" alt="Meghana working on a project"
+               className="w-full max-w-sm aspect-square rounded-2xl object-cover" />
+        </div>
+        <div>
+          <div className="grid grid-cols-2 gap-4 mb-8">
+            <div className="border border-gray-200 rounded-xl p-5 text-center">
+              <div className="text-2xl mb-2">🎓</div>
+              <p className="font-semibold">Education</p>
+              <p className="text-sm text-gray-500 mt-1">B.Tech CSE — IoT & Blockchain</p>
+              <p className="text-sm text-gray-500">DSCE, Bangalore</p>
+            </div>
+            <div className="border border-gray-200 rounded-xl p-5 text-center">
+              <div className="text-2xl mb-2">📚</div>
+              <p className="font-semibold">Currently Learning</p>
+              <p className="text-sm text-gray-500 mt-1">Generative AI, RAG</p>
+              <p className="text-sm text-gray-500">LangChain, Hugging Face</p>
+            </div>
+          </div>
+          <p className="text-gray-600 leading-relaxed">
+            I'm a 3rd-year CSE student building toward depth in Artificial Intelligence
+            and Machine Learning, with cybersecurity, IoT, and DSA rounding out my core
+            skill set. I'm that person who's so invested in AI that it quietly runs
+            parts of my day-to-day life — this portfolio included. I'd rather show a
+            handful of projects I can explain end-to-end than a long list I barely
+            remember building.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ---------- Skills ----------
+function SkillCard({ title, icon, skills }) {
+  return (
+    <div className="border border-gray-200 rounded-xl p-6">
+      <h3 className="font-semibold text-lg mb-5 flex items-center gap-2">
+        <span>{icon}</span> {title}
+      </h3>
+      <div className="grid grid-cols-2 gap-x-4 gap-y-4">
+        {skills.map(s => (
+          <div key={s.name} className="flex items-start gap-2">
+            <span className="mt-0.5 text-accent-600">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="12"/></svg>
+            </span>
+            <div>
+              <p className="text-sm font-medium">{s.name}</p>
+              <p className="text-xs text-gray-500">{s.level}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Skills() {
+  return (
+    <section id="skills" className="max-w-6xl mx-auto px-6 py-20 bg-gray-50/50">
+      <p className="text-center text-sm text-gray-500 mb-1">Explore my</p>
+      <h2 className="text-center text-3xl font-bold mb-14">Skills</h2>
+      <div className="grid sm:grid-cols-2 gap-6">
+        <SkillCard title="AI / ML" icon="🤖" skills={[
+          { name: "Python", level: "Working knowledge" },
+          { name: "PyTorch / LightGBM", level: "Working knowledge" },
+          { name: "LLMs / Prompt Eng.", level: "Working knowledge" },
+          { name: "RAG / LangChain", level: "Currently learning" }
+        ]} />
+        <SkillCard title="Cybersecurity" icon="🔐" skills={[
+          { name: "Threat Intel Enrichment", level: "Applied in DART" },
+          { name: "SOC / Alert Triage", level: "Applied in DART" },
+          { name: "Security Automation", level: "Applied in DART" }
+        ]} />
+        <SkillCard title="IoT" icon="📡" skills={[
+          { name: "ESP32 / Arduino", level: "Working knowledge" },
+          { name: "Firebase", level: "Working knowledge" },
+          { name: "Sensor & GPS Integration", level: "Working knowledge" }
+        ]} />
+        <SkillCard title="DSA" icon="🧩" skills={[
+          { name: "Data Structures", level: "Working knowledge" },
+          { name: "Algorithms", level: "Working knowledge" },
+          { name: "Problem Solving", level: "Ongoing practice" }
+        ]} />
+      </div>
+    </section>
+  );
+}
+
+// ---------- Project banner illustrations (custom SVG, no external images) ----------
+function BannerXray() {
+  return (
+    <svg viewBox="0 0 400 140" className="w-full h-32 bg-gray-900">
+      <rect width="400" height="140" fill="#111827"/>
+      <g stroke="#93c5fd" strokeWidth="2" fill="none" opacity="0.8">
+        <line x1="150" y1="20" x2="150" y2="120"/>
+        <line x1="250" y1="20" x2="250" y2="120"/>
+        {Array.from({length: 9}).map((_, i) => (
+          <line key={i} x1={150 - 14} y1={20 + i * 12} x2={150 + 14} y2={20 + i * 12} />
+        ))}
+        {Array.from({length: 9}).map((_, i) => (
+          <line key={i} x1={250 - 14} y1={20 + i * 12} x2={250 + 14} y2={20 + i * 12} />
+        ))}
+      </g>
+      <rect x="110" y="15" width="80" height="110" rx="6" fill="none" stroke="#3b82f6" strokeWidth="2" strokeDasharray="5 4"/>
+      <text x="118" y="132" fill="#60a5fa" fontSize="10" fontFamily="monospace">malignant: 0.87</text>
+    </svg>
+  );
+}
+
+function BannerSecurity() {
+  return (
+    <svg viewBox="0 0 400 140" className="w-full h-32 bg-gray-900">
+      <rect width="400" height="140" fill="#0b1220"/>
+      {[[60,40],[140,25],[220,55],[300,30],[340,80],[100,100],[200,110],[260,90]].map((p, i) => (
+        <circle key={i} cx={p[0]} cy={p[1]} r="4" fill="#3b82f6"/>
+      ))}
+      <g stroke="#3b82f6" strokeWidth="1" opacity="0.5">
+        <line x1="60" y1="40" x2="140" y2="25"/>
+        <line x1="140" y1="25" x2="220" y2="55"/>
+        <line x1="220" y1="55" x2="300" y2="30"/>
+        <line x1="220" y1="55" x2="260" y2="90"/>
+        <line x1="260" y1="90" x2="200" y2="110"/>
+        <line x1="200" y1="110" x2="100" y2="100"/>
+        <line x1="100" y1="100" x2="60" y2="40"/>
+        <line x1="300" y1="30" x2="340" y2="80"/>
+      </g>
+      <path d="M190 45 L210 45 L210 65 Q200 78 190 65 Z" fill="none" stroke="#93c5fd" strokeWidth="2"/>
+    </svg>
+  );
+}
+
+function BannerBlockchain() {
+  return (
+    <svg viewBox="0 0 400 140" className="w-full h-32 bg-gray-900">
+      <rect width="400" height="140" fill="#111827"/>
+      {[60, 150, 240, 330].map((x, i) => (
+        <g key={i}>
+          <rect x={x-25} y="55" width="50" height="40" rx="4" fill="none" stroke="#60a5fa" strokeWidth="2"/>
+          <circle cx={x} cy="75" r="4" fill="#3b82f6"/>
+          {i < 3 && <line x1={x+25} y1="75" x2={x+95} y2="75" stroke="#3b82f6" strokeWidth="2" strokeDasharray="4 3"/>}
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+function BannerDNA() {
+  return (
+    <svg viewBox="0 0 400 140" className="w-full h-32 bg-gray-900">
+      <rect width="400" height="140" fill="#0b1220"/>
+      {Array.from({length: 14}).map((_, i) => {
+        const x = 40 + i * 24;
+        const y1 = 70 + Math.sin(i * 0.6) * 45;
+        const y2 = 70 - Math.sin(i * 0.6) * 45;
+        return (
+          <g key={i}>
+            <line x1={x} y1={y1} x2={x} y2={y2} stroke="#3b82f6" strokeWidth="1" opacity="0.4"/>
+            <circle cx={x} cy={y1} r="3.5" fill="#60a5fa"/>
+            <circle cx={x} cy={y2} r="3.5" fill="#93c5fd"/>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+function ProjectCard({ title, tag, banner, desc, tech, role, github }) {
+  return (
+    <div className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow">
+      {banner}
+      <div className="p-6">
+        <p className="text-xs font-semibold uppercase tracking-wide text-accent-600 mb-1">{tag}</p>
+        <h3 className="font-bold text-lg mb-2">{title}</h3>
+        <p className="text-sm text-gray-600 mb-4 leading-relaxed">{desc}</p>
+        <div className="flex flex-wrap gap-2 mb-4">
+          {tech.map(t => (
+            <span key={t} className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">{t}</span>
+          ))}
+        </div>
+        <p className="text-xs text-gray-500 mb-4 border-l-2 border-accent-200 pl-3">{role}</p>
+        <a href={github} target="_blank" rel="noreferrer"
+           className="inline-block text-sm font-medium px-4 py-2 rounded-full border border-gray-300 hover:border-gray-900 transition-colors">
+          View on GitHub
+        </a>
+      </div>
+    </div>
+  );
+}
+
+function Projects() {
+  return (
+    <section id="projects" className="max-w-6xl mx-auto px-6 py-20">
+      <p className="text-center text-sm text-gray-500 mb-1">Browse my recent</p>
+      <h2 className="text-center text-3xl font-bold mb-14">Projects</h2>
+      <div className="grid sm:grid-cols-2 gap-6">
+        <ProjectCard
+          title="Bone Cancer Detection & Classification"
+          tag="AI / ML"
+          banner={<BannerXray />}
+          desc="An end-to-end deep learning pipeline classifying X-ray images into normal, benign, and malignant categories using a ResNet-50 backbone with a custom classification head, an Owl Search Algorithm for hyperparameter tuning, and Grad-CAM heatmaps for interpretability."
+          tech={["PyTorch", "ResNet-50", "Owl Search Algorithm", "Grad-CAM", "Streamlit"]}
+          role="Built end-to-end — model architecture, training, hyperparameter tuning, Grad-CAM visualization, and a Streamlit dashboard for real-time inference with simulated big-data logging for traceability."
+          github="https://github.com/pisemegh/bone-detection"
+        />
+        <ProjectCard
+          title="DART — Dynamic Routing & Alert Triage"
+          tag="Cybersecurity"
+          banner={<BannerSecurity />}
+          desc="A SOC automation platform enriching security alerts in real time using threat-intelligence APIs (GreyNoise, AbuseIPDB, VirusTotal, GeoIP) with automated risk scoring."
+          tech={["Node.js", "Next.js", "Docker", "Server-Sent Events"]}
+          role="Took primary ownership of the automated playbook system — decision logic triggering mitigation actions (IP blocking, rate-limiting) based on risk scores. Also contributed to real-time alert delivery (SSE) and the Docker service architecture. Validated under a simulated DDoS load test, with risk scores scaling 40–95 as expected."
+          github="https://github.com/pisemegh/dart"
+        />
+        <ProjectCard
+          title="Decentralized Messaging App"
+          tag="Blockchain"
+          banner={<BannerBlockchain />}
+          desc="A messaging app built on the Stellar blockchain, exploring decentralized communication."
+          tech={["Blockchain", "Stellar SDK"]}
+          role="Significantly hands-on — one of my main showcase repos, being developed independently."
+          github="https://github.com/pisemegh/Decentralised-Messaging-App-using-Stellar-Blockchain"
+        />
+        <ProjectCard
+          title="BioTrace — eDNA Species Identification"
+          tag="AI / ML"
+          banner={<BannerDNA />}
+          desc="A full-stack ML pipeline for eDNA-based species identification — collaborative work spanning data processing, model integration, and the React dashboard."
+          tech={["Python", "FastAPI", "React", "LightGBM", "NCBI Entrez API"]}
+          role="Took primary ownership of training the LightGBM classification model on ~5,000 curated eDNA sequences, enabling top-3 species predictions with confidence scores. Also contributed to the FastAPI backend and feature-extraction pipeline."
+          github="https://github.com/pisemegh/BioTrace"
+        />
+      </div>
+    </section>
+  );
+}
+
+// ---------- Resume + Contact (combined, side by side) ----------
+function ResumeAndContact() {
+  return (
+    <section className="max-w-4xl mx-auto px-6 py-20">
+      <div className="grid sm:grid-cols-2 gap-10 items-start">
+
+        <div id="resume" className="text-center">
+          <p className="text-sm text-gray-500 mb-1">Get the full picture</p>
+          <h2 className="text-3xl font-bold mb-6">Resume</h2>
+          <p className="text-gray-600 mb-8">Full resume, in PDF format.</p>
+          <a href="resume.pdf" download
+             className="inline-block px-8 py-3 rounded-full bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 transition-colors">
+            Download CV
+          </a>
+        </div>
+
+        <div id="contact" className="text-center">
+          <p className="text-sm text-gray-500 mb-1">Get in touch</p>
+          <h2 className="text-3xl font-bold mb-6">Contact Me</h2>
+          <div className="inline-flex gap-3">
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=pisemegh1@gmail.com" target="_blank" rel="noreferrer"
+               title="pisemegh1@gmail.com"
+               className="w-11 h-11 flex items-center justify-center rounded-full border border-gray-200 text-gray-600 hover:border-gray-900 hover:text-gray-900 transition-colors">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4-8 5-8-5V6l8 5 8-5v2Z"/></svg>
+            </a>
+            <a href="https://www.linkedin.com/in/meghanapise/" target="_blank" rel="noreferrer"
+               title="LinkedIn"
+               className="w-11 h-11 flex items-center justify-center rounded-full border border-gray-200 text-gray-600 hover:border-gray-900 hover:text-gray-900 transition-colors">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.03-1.85-3.03-1.85 0-2.14 1.45-2.14 2.94v5.66H9.36V9h3.41v1.56h.05c.48-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45Z"/></svg>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  );
+}
+
+// ---------- Footer ----------
+function Footer() {
+  return (
+    <footer className="border-t border-gray-100 mt-6">
+      <div className="flex justify-center gap-6 pt-6 pb-6 text-sm text-gray-500">
+        <a href="#home" className="hover:text-gray-900">Home</a>
+        <a href="#about" className="hover:text-gray-900">About</a>
+        <a href="#skills" className="hover:text-gray-900">Skills</a>
+        <a href="#projects" className="hover:text-gray-900">Projects</a>
+        <a href="#resume" className="hover:text-gray-900">Resume</a>
+      </div>
+      <p className="text-center text-xs text-gray-400 pb-8">
+        Copyright © {new Date().getFullYear()} Meghana Pise. All Rights Reserved.
+      </p>
+    </footer>
+  );
+}
+
+function App() {
+  return (
+    <div>
+      <Navbar />
+      <Hero />
+      <About />
+      <Skills />
+      <Projects />
+      <ResumeAndContact />
+      <Footer />
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
